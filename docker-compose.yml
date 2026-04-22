@@ -42,6 +42,7 @@ services:
       GEO_TALLINN_SOURCE_LAYER: "${GEO_TALLINN_SOURCE_LAYER:-tallinn_open_data}"
       GEO_TALLINN_FEATURE_ID_PROPERTY: "${GEO_TALLINN_FEATURE_ID_PROPERTY:-id}"
       GEO_TALLINN_FEATURE_NAME_PROPERTY: "${GEO_TALLINN_FEATURE_NAME_PROPERTY:-name}"
+      ROUTING_BROUTER_BASE_URL: "http://brouter:17777/brouter"
 
   frontend:
     image: ghcr.io/${GHCR_OWNER}/cyclerouteplanner-frontend:${FRONTEND_IMAGE_TAG:-latest}
