@@ -22,7 +22,7 @@ transforms:
     inputs:
       - backend_logs
     source: |
-      .source = .container_name ?? "backend"
+      .source = .container_name
 
   label_nginx:
     type: remap
@@ -30,7 +30,7 @@ transforms:
       - nginx_access_logs
       - nginx_error_logs
     source: |
-      .source = .file ?? "nginx"
+      .source = .file
 
 sinks:
   betterstack_backend:
