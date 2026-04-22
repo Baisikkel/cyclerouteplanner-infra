@@ -19,16 +19,18 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml"
           target: ${{ secrets.DEPLOY_PATH }}
+          overwrite: true
 
       - name: Copy nginx config to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}x
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "nginx/baisikkel.models.ee"
           target: "/tmp"
           strip_components: 1
+          overwrite: true
 
       - name: Apply nginx config and restart services
         uses: appleboy/ssh-action@v1.2.0
