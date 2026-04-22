@@ -46,6 +46,9 @@ jobs:
             sudo nginx -t
             sudo systemctl reload nginx
             cd "${{ secrets.DEPLOY_PATH }}"
-            docker compose build brouter
+            # Only build brouter if the image doesn't exist (it's a one-time build)
+            if ! docker image inspect cyclerouteplanner-brouter:latest >/dev/null 2>&1; then
+              docker compose build brouter
+            fi
             docker compose pull backend frontend vector
             docker compose up -d
