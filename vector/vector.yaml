@@ -24,7 +24,13 @@ transforms:
       - nginx_access_logs
       - nginx_error_logs
     source: |
-      .source = .container_name ?? .file ?? "unknown"
+      if exists(.container_name) {
+        .source = .container_name
+      } else if exists(.file) {
+        .source = .file
+      } else {
+        .source = "unknown"
+      }
 
 sinks:
   betterstack:
