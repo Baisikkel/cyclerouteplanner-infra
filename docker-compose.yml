@@ -61,6 +61,7 @@ services:
       - vector_data:/var/lib/vector
     environment:
       BETTERSTACK_SOURCE_TOKEN: "${BETTERSTACK_SOURCE_TOKEN:?BETTERSTACK_SOURCE_TOKEN is required}"
+      BETTERSTACK_NGINX_SOURCE_TOKEN: "${BETTERSTACK_NGINX_SOURCE_TOKEN:?BETTERSTACK_NGINX_SOURCE_TOKEN is required}"
 
 volumes:
   cycleroute_postgres_data:

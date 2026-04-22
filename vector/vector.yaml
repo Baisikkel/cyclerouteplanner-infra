@@ -17,29 +17,40 @@ sources:
     read_from: beginning
 
 transforms:
-  add_source_label:
+  label_backend:
     type: remap
     inputs:
       - backend_logs
+    source: |
+      .source = .container_name ?? "backend"
+
+  label_nginx:
+    type: remap
+    inputs:
       - nginx_access_logs
       - nginx_error_logs
     source: |
-      if exists(.container_name) {
-        .source = .container_name
-      } else if exists(.file) {
-        .source = .file
-      } else {
-        .source = "unknown"
-      }
+      .source = .file ?? "nginx"
 
 sinks:
-  betterstack:
+  betterstack_backend:
     type: http
     inputs:
-      - add_source_label
+      - label_backend
     uri: https://s2388953.eu-fsn-3.betterstackdata.com
     encoding:
       codec: json
     request:
       headers:
         Authorization: "Bearer ${BETTERSTACK_SOURCE_TOKEN}"
+
+  betterstack_nginx:
+    type: http
+    inputs:
+      - label_nginx
+    uri: https://s2389256.eu-fsn-3.betterstackdata.com
+    encoding:
+      codec: json
+    request:
+      headers:
+        Authorization: "Bearer ${BETTERSTACK_NGINX_SOURCE_TOKEN}"

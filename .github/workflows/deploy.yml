@@ -11,13 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy docker-compose and vector config to server
+      - name: Copy infra files to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml,vector/vector.yaml"
+          source: "docker-compose.yml,vector/vector.yaml,brouter/Dockerfile,brouter/entrypoint.sh,brouter/profiles/*"
           target: ${{ secrets.DEPLOY_PATH }}
           overwrite: true
 
@@ -46,5 +46,6 @@ jobs:
             sudo nginx -t
             sudo systemctl reload nginx
             cd "${{ secrets.DEPLOY_PATH }}"
-            docker compose pull
+            docker compose build brouter
+            docker compose pull backend frontend vector
             docker compose up -d
