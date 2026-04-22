@@ -50,5 +50,18 @@ services:
     ports:
       - "127.0.0.1:18081:8080"
 
+  vector:
+    image: timberio/vector:0.43.1-alpine
+    container_name: cyclerouteplanner-vector
+    restart: unless-stopped
+    volumes:
+      - ./vector/vector.yaml:/etc/vector/vector.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/log/nginx:/var/log/nginx:ro
+      - vector_data:/var/lib/vector
+    environment:
+      BETTERSTACK_SOURCE_TOKEN: "${BETTERSTACK_SOURCE_TOKEN:?BETTERSTACK_SOURCE_TOKEN is required}"
+
 volumes:
   cycleroute_postgres_data:
+  vector_data:

@@ -1,0 +1,39 @@
+sources:
+  backend_logs:
+    type: docker_logs
+    include_containers:
+      - cyclerouteplanner-backend
+
+  nginx_access_logs:
+    type: file
+    include:
+      - /var/log/nginx/access.log
+    read_from: beginning
+
+  nginx_error_logs:
+    type: file
+    include:
+      - /var/log/nginx/error.log
+    read_from: beginning
+
+transforms:
+  add_source_label:
+    type: remap
+    inputs:
+      - backend_logs
+      - nginx_access_logs
+      - nginx_error_logs
+    source: |
+      .source = .container_name ?? .file ?? "unknown"
+
+sinks:
+  betterstack:
+    type: http
+    inputs:
+      - add_source_label
+    uri: https://s2388953.eu-fsn-3.betterstackdata.com
+    encoding:
+      codec: json
+    request:
+      headers:
+        Authorization: "Bearer ${BETTERSTACK_SOURCE_TOKEN}"
