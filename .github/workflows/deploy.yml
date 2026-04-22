@@ -39,6 +39,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script_stop: true
+          command_timeout: 30m
           script: |
             set -e
             sudo cp /tmp/baisikkel.models.ee /etc/nginx/sites-available/baisikkel.models.ee
