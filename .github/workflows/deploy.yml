@@ -1,0 +1,36 @@
+name: Deploy Infra
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  SSH_HOST: 193.40.157.129
+  SSH_USER: ubuntu
+  DEPLOY_PATH: /opt/cyclerouteplanner/infra
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Copy docker-compose to server
+        run: |
+          scp docker-compose.yml ${SSH_USER}@${SSH_HOST}:${DEPLOY_PATH}/docker-compose.yml
+
+      - name: Copy nginx config to server
+        run: |
+          scp nginx/baisikkel.models.ee ${SSH_USER}@${SSH_HOST}:/tmp/baisikkel.models.ee
+          ssh ${SSH_USER}@${SSH_HOST} "sudo cp /tmp/baisikkel.models.ee /etc/nginx/sites-available/baisikkel.models.ee && sudo nginx -t && sudo systemctl reload nginx"
+
+      - name: Pull and restart containers
+        run: |
+          ssh ${SSH_USER}@${SSH_HOST} "cd ${DEPLOY_PATH} && docker compose pull && docker compose up -d"
