@@ -27,7 +27,7 @@ transforms:
       if err == null {
         .level = parsed.level
         .logger = parsed.logger
-        .thread = strip_whitespace(parsed.thread)
+        .thread, err = strip_whitespace(parsed.thread)
         .message = parsed.msg
       }
       del(.container_created_at)
