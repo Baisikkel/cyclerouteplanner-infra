@@ -17,12 +17,25 @@ sources:
     read_from: beginning
 
 transforms:
-  label_backend:
+  parse_backend:
     type: remap
     inputs:
       - backend_logs
     source: |
       .source = .container_name
+      parsed, err = parse_regex(.message, r'^(?P<timestamp>\S+)\s+(?P<level>\w+)\s+\d+\s+---\s+\[.*?\]\s+\[(?P<thread>[^\]]*?)\]\s+(?P<logger>\S+)\s+:\s+(?P<msg>.*)$')
+      if err == null {
+        .level = parsed.level
+        .logger = parsed.logger
+        .thread = strip_whitespace(parsed.thread)
+        .message = parsed.msg
+      }
+      del(.container_created_at)
+      del(.container_id)
+      del(.container_name)
+      del(.image)
+      del(.label)
+      del(.stream)
 
   parse_nginx_access:
     type: remap
@@ -57,7 +70,7 @@ sinks:
   betterstack_backend:
     type: http
     inputs:
-      - label_backend
+      - parse_backend
     uri: https://s2388953.eu-fsn-3.betterstackdata.com
     encoding:
       codec: json
