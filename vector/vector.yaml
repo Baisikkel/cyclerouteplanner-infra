@@ -24,10 +24,26 @@ transforms:
     source: |
       .source = .container_name
 
-  label_nginx:
+  parse_nginx_access:
     type: remap
     inputs:
       - nginx_access_logs
+    source: |
+      .source = .file
+      parsed, err = parse_nginx_log(.message, "combined")
+      if err == null {
+        .client_ip = parsed.client
+        .method = parsed.method
+        .path = parsed.path
+        .status = parsed.status
+        .size = parsed.size
+        .referer = parsed.referer
+        .user_agent = parsed.agent
+      }
+
+  label_nginx_error:
+    type: remap
+    inputs:
       - nginx_error_logs
     source: |
       .source = .file
@@ -47,7 +63,8 @@ sinks:
   betterstack_nginx:
     type: http
     inputs:
-      - label_nginx
+      - parse_nginx_access
+      - label_nginx_error
     uri: https://s2389256.eu-fsn-3.betterstackdata.com
     encoding:
       codec: json
