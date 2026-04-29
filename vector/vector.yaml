@@ -40,12 +40,18 @@ transforms:
         .agent = parsed.agent
       }
 
-  label_nginx_error:
+  parse_nginx_error:
     type: remap
     inputs:
       - nginx_error_logs
     source: |
       .source = .file
+      parsed, err = parse_nginx_log(.message, "error")
+      if err == null {
+        .client = parsed.client
+        .request = parsed.request
+        .severity = parsed.severity
+      }
 
 sinks:
   betterstack_backend:
@@ -63,7 +69,7 @@ sinks:
     type: http
     inputs:
       - parse_nginx_access
-      - label_nginx_error
+      - parse_nginx_error
     uri: https://s2389256.eu-fsn-3.betterstackdata.com
     encoding:
       codec: json
