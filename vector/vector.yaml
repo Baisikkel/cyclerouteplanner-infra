@@ -32,13 +32,12 @@ transforms:
       .source = .file
       parsed, err = parse_nginx_log(.message, "combined")
       if err == null {
-        .client_ip = parsed.client
-        .method = parsed.method
-        .path = parsed.path
+        .client = parsed.client
+        .request = parsed.request
         .status = parsed.status
         .size = parsed.size
         .referer = parsed.referer
-        .user_agent = parsed.agent
+        .agent = parsed.agent
       }
 
   label_nginx_error:

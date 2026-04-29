@@ -52,3 +52,5 @@ jobs:
             fi
             docker compose pull backend frontend vector
             docker compose up -d
+            # Vector config is bind-mounted; force recreate to pick up changes
+            docker compose up -d --force-recreate vector
